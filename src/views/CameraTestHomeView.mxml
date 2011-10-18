@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="HomeView" xmlns:ns="library://ns.adobe.com/flex/halo"
+		creationComplete="onComplete(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.nocreativity.webcam.DetectionEvent;
+			import com.nocreativity.webcam.MotionDetector;
+			
+			import mx.events.FlexEvent;
+			
+			private var _video:Video;
+			private var _camera:Camera;
+			private var _detector:MotionDetector;
+			private var _overlay:Sprite;
+			
+			private function settingsClick(event:MouseEvent):void
+			{
+				navigator.pushView(Settings);
+			}
+			
+			private function onComplete(event:FlexEvent):void
+			{
+				setupCamera();
+			}
+			
+			private function setupCamera():void
+			{
+				if (Camera.isSupported) {
+					_detector = new MotionDetector(detectorHolder.width,detectorHolder.height);
+					_detector.attachCamera(Camera.getCamera('0'));
+					_detector.startDetection();
+					_detector.rectColor = 0x00ccff;
+					_detector.rectThickness=1;
+					_detector.enableDrawing=false;
+					_detector.addEventListener(DetectionEvent.DETECT, handleDetection)
+					
+					_overlay = new Sprite();
+					var uiHolder:UIComponent = new UIComponent();
+					uiHolder.addChild(_detector);
+					uiHolder.addChild(_overlay);
+					
+					detectorHolder.addChild(uiHolder);
+				} else {
+					trace("No camera support.");
+				}
+			}
+			
+			private function handleDetection(event:DetectionEvent):void
+			{
+				_overlay.graphics.clear();
+				_overlay.graphics.lineStyle(2, 0x00CCFF,0.4);
+				_overlay.graphics.beginFill(0x00CCFF, 0);
+				_overlay.graphics.drawRect(event.rect.x, event.rect.y, event.rect.width, event.rect.height);
+				_overlay.graphics.endFill();
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	<s:VGroup width="100%" height="100%">
+		<ns:UIComponent id="detectorHolder" width="100%" height="100%" />
+		<s:Button id="settingsBt" label="Settings" click="settingsClick(event)" />
+	</s:VGroup>
+</s:View>
