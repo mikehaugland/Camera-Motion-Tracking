@@ -27,7 +27,9 @@
 	
 	<s:Group>
 		<s:FormItem label="Camera">
-			<s:DropDownList id="cameraList" dataProvider="{_cameras}" />
+			<s:SpinnerListContainer>
+				<s:SpinnerList id="cameraList" dataProvider="{_cameras}" />
+			</s:SpinnerListContainer>
 		</s:FormItem>
 	</s:Group>
 </s:View>
